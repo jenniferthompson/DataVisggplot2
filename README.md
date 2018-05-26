@@ -1,4 +1,4 @@
-:construction: WORK IN PROGRESS :construction
+:construction: WORK IN PROGRESS :construction:
 
 # Data Visualization with `ggplot2`
 
