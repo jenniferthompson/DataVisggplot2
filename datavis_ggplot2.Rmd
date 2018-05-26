@@ -35,16 +35,6 @@ class: inverse, middle
 
 ---
 
-# Advantages over base R graphics
-
-- Less time to high-quality plots
-- Intelligent default values
-- Easy to summarize data
-- Easy to include many types of color scales
-- Reasoning behind all default decisions
-
----
-
 # Goals
 
 We will understand how:
@@ -56,6 +46,11 @@ We will understand how:
 - Control axes and legends using `scales/guides`
 - Change plot appearance using `themes` and other options
 - Save plots using `ggsave()`
+
+## Plan
+
+1. General overview of key concepts: `aesthetics`, `geoms`, layering, `scales`, `facets`, `themes`
+1. "Cookbook" approach to demonstrate details
 
 ---
 
@@ -899,12 +894,16 @@ class: inverse, middle, center
 
 **What** data is mapped to which plot characteristic
 
+`aes(x = ...)`
+
 ]
 
 .pull-right[
 ## scales
 
-**How** to map data to plot characteristics
+**How** to map<br>data to plot characteristics
+
+`scale_x_...(...)`
 ]
 
 ---
@@ -966,7 +965,7 @@ ggplot(
 **Note** how `scales` control the legend!
 
 .pull-left[
-## `aesthetics`
+### `aes(thetics)`
 
 "Fill" the bars with colors by sex
 
@@ -991,7 +990,7 @@ ggplot(
 ]
 
 .pull-right[
-## `scales`
+### `scales`
 
 - Use a different color palette
 - Change name to "Patient sex"
@@ -1002,6 +1001,10 @@ ggplot(data = rct_df, aes(x = trt, y = npts, group = sex, fill = sex)) +
   scale_fill_hue(h = c(90, 270), l = 40, name = "Patient Sex")
 ```
 ]
+
+---
+
+
 
 ---
 
