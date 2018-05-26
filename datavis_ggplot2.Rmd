@@ -1,0 +1,1046 @@
+---
+title: "Data Visualization with ggplot2"
+author: "Jennifer Thompson, MPH"
+date: "2018-06-06"
+output:
+  xaringan::moon_reader:
+    css: ["default", "rladies", "rladies-fonts"]
+    chakra: libs/remark-latest.min.js
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r set_this_up, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = FALSE, warning = FALSE, message = FALSE)
+knitr::knit_engines$set("yaml")
+
+library(ggplot2)
+library(gapminder)
+
+```
+
+class: inverse, middle
+
+## `ggplot2`: data visualization system based on the **grammar of graphics**
+
+--
+
+- Quickly make beautiful, high-quality visualizations
+- Map plot characteristics directly to qualities of data
+- Automatically create informative plot legends
+- Show subsets of data using small multiples
+
+---
+
+# Advantages over base R graphics
+
+- Less time to high-quality plots
+- Intelligent default values
+- Easy to summarize data
+- Easy to include many types of color scales
+- Reasoning behind all default decisions
+
+---
+
+# Goals
+
+We will understand how:
+
+- Data are mapped to `aesthetics`
+- Plots are built in layers by `geoms`
+- Control aesthetics using `scales`
+- Show small multiples using `facets`
+- Control axes and legends using `scales/guides`
+- Change plot appearance using `themes` and other options
+- Save plots using `ggsave()`
+
+---
+
+# The Grammar of Graphics
+
+- Largely developed by Leland Wilkinson in [*The Grammar of Graphics*](https://www.springer.com/us/book/9780387245447)
+- Extended by Hadley Wickham ([paper](http://vita.had.co.nz/papers/layered-grammar.pdf)), original author of `ggplot2`
+
+--
+
+.pull-left[
+### A little time learning the grammar ➡️
+
+]
+
+.pull-right[
+### Power, ease in creating beautiful, informative graphics
+]
+
+--
+
+*(compare this to trying to remember all the arguments to `par`)*
+
+---
+
+# Components of Statistical Graphics
+
+- Data
+- Aesthetic mappings of the data (eg, location or size)
+- Geometric objects (ie, the shape of the data)
+- Scales
+- Statistical transformation
+- Coordinates
+
+--
+
+```{r make_data, echo = FALSE}
+df <- data.frame(xvar = rnorm(n = 100))
+df$yvar <- df$xvar * runif(n = 100)
+
+```
+
+.pull-left[
+```{r eval = FALSE}
+ggplot(
+  data = df,
+  aes(x = xvar, y = yvar)
+) +
+  geom_point(stat = "identity") +
+  scale_x_continuous(
+    limits = c(min(df$xvar), max(df$xvar)),
+    name = "X Axis"
+  ) +
+  scale_y_continuous(
+    limits = c(min(df$yvar), max(df$yvar)),
+    name = "Y Axis"
+  )
+```
+
+]
+
+.pull-right[
+```{r echo = FALSE, out.height=300}
+ggplot(
+  data = df,
+  aes(x = xvar, y = yvar)
+) +
+  geom_point(stat = "identity") +
+  scale_x_continuous(
+    limits = c(min(df$xvar), max(df$xvar)),
+    name = "X Axis"
+  ) +
+  scale_y_continuous(
+    limits = c(min(df$yvar), max(df$yvar)),
+    name = "Y Axis"
+  )
+```
+
+]
+
+---
+
+.pull-left[
+### Base R
+
+```{r baser}
+with(df, plot(yvar ~ xvar))
+
+```
+
+]
+
+.pull-right[
+
+### ggplot2
+
+```{r ggplot2, out.height = 300}
+ggplot(
+  data = df,
+  aes(x = xvar, y = yvar)
+) +
+  geom_point()
+
+```
+]
+
+--
+
+### **Notice**: ggplot2 knows which stat, scales to use by default
+
+---
+
+class: inverse, middle, center
+
+# It Always Starts with Data
+
+`ggplot(data = ..., ...)`
+
+--
+
+Everything **starts** with a data.frame.
+
+--
+
+Anything that represents **data** on the plot must be within a data.frame.
+
+---
+
+# Represent Data with `aesthetics`
+
+- "Aesthetics" = how we map the **values** of data to the **appearance** of the plot
+- Examples:
+    - X, Y axis values
+    - Color, shape, sizes of points
+    - Opacity, fill of shapes
+    
+---
+
+```{r show_df, results = "markup"}
+print(head(df, n = 3), digits = 2)
+
+```
+
+```{r aes_eg, eval = FALSE}
+ggplot(
+  data = df, #<<
+  aes(x = xvar, y = yvar)
+)
+
+```
+
+---
+
+```{r show_df_2, results = "markup"}
+print(head(df, n = 3), digits = 2)
+
+```
+
+```{r aes_eg_2, eval = FALSE}
+ggplot(
+  data = df,
+  aes(x = xvar, y = yvar) #<<
+)
+
+```
+
+.pull-left[
+```{r aes_eg_3, echo = FALSE, fig.asp = 0.7}
+ggplot(
+  data = df,
+  aes(x = xvar, y = yvar)
+)
+
+```
+]
+
+--
+
+.pull-right[
+
+### What Do You Notice?
+
+- Correct X, Y limits
+- Axis labels
+- ...no actual data
+]
+
+--
+
+### We haven't told it *how* to show the data!
+
+---
+
+class: center, inverse, middle
+
+# `aesthetics` + `geoms` = 👯
+
+---
+
+# Represent Data with `geoms`
+
+`geoms` determine the **shape** of the data.
+
+.pull-left[
+```{r geom_eg, eval = FALSE}
+ggplot(
+  data = df, aes(x = xvar, y = yvar)
+) + #<<
+  geom_point() #<<
+
+```
+]
+
+--
+
+.pull-right[
+```{r geom_eg_run, echo = FALSE}
+ggplot(data = df, aes(x = xvar, y = yvar)) +
+  geom_point()
+
+```
+]
+
+---
+
+# Represent Data with `geoms`
+
+`geoms` determine the **shape** of the data.
+
+.pull-left[
+```{r geom_line_eg, eval = FALSE}
+ggplot(
+  data = df, aes(x = xvar, y = yvar)
+) + #<<
+  geom_line() #<<
+
+```
+]
+
+--
+
+.pull-right[
+```{r geom_line_eg_run, echo = FALSE}
+ggplot(data = df, aes(x = xvar, y = yvar)) +
+  geom_line()
+
+```
+]
+
+---
+
+.pull-left[
+## Different `geoms`...
+]
+
+.pull-right[
+## different `aesthetics`
+]
+
+The `aesthetics` you need depend on the `geom` you want to show.
+
+Examples:
+
+- `geom_point`, `geom_line` each need only X, Y values
+- `geom_ribbon` needs X, but rather than a single Y, it needs `ymin` and `ymax`
+
+--
+
+### Your Turn!
+
+Look at the help files for these `geoms` and see what `aesthetics` each one needs.
+
+```
+library(ggplot2)
+?geom_line
+?geom_boxplot
+?geom_bar
+?geom_ribbon
+```
+
+---
+
+# Your Turn!
+
+Using the `gapminder` dataset from the year 2007, show the relationship between `gdpPercap` and `lifeExp` using `aesthetics` and `geoms`.
+
+```{r}
+# install.packages("gapminder")
+library(gapminder)
+head(gapminder)
+
+gap2007 <- subset(gapminder, year == 2007)
+
+```
+
+---
+
+# Your Turn!
+
+```{r}
+p <- ggplot(
+  data = gap2007,
+  aes(x = gdpPercap, y = lifeExp) #<<
+)
+
+```
+
+.pull-left[
+```{r, out.height = 250, fig.asp = 0.6}
+p +
+  geom_point() #<<
+```
+]
+
+.pull-right[
+```{r, out.height = 250, fig.asp = 0.6}
+p +
+  geom_line() #<<
+```
+]
+
+---
+
+# `geoms` + `stats`
+
+Some `geoms` require the user to supply all the information needed to map each point.
+
+- `geom_point`, `geom_line`, `geom_ribbon`
+
+--
+
+Others use `stats` behind the scenes to summarize the data.
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = df, aes(x = 1, y = yvar)
+) +
+  geom_boxplot()
+
+```
+
+![geom_boxplot aesthetics](images/geom_boxplot_aes.png)
+]
+
+.pull-right[
+```{r, echo = FALSE, fig.asp = 0.8}
+ggplot(data = df, aes(x = 1, y = yvar)) +
+  geom_boxplot()
+
+```
+
+]
+
+Often we won't need to call `stats` explicitly; `geoms` have excellent defaults that do much of the work for us!
+
+---
+
+class: inverse, middle, center
+
+# Layers = Power 💪
+
+---
+
+## Scenario: Raw Data + Regression Line
+
+We want to represent the same data, using a summary as well as the raw data.
+
+We can do this by **layering** `geoms`.
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = gap2007,
+  aes(x = gdpPercap, y = lifeExp)
+) +
+  geom_point() #<<
+
+```
+]
+
+.pull-right[
+```{r, echo = FALSE}
+ggplot(data = gap2007, aes(x = gdpPercap, y = lifeExp)) +
+  geom_point()
+
+```
+]
+
+---
+
+## Scenario: Raw Data + Regression Line
+
+We want to represent the same data, using a summary as well as the raw data.
+
+We can do this by **layering** `geoms`.
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = gap2007,
+  aes(x = gdpPercap, y = lifeExp)
+) +
+  geom_point() +
+  geom_smooth() #<<
+
+```
+]
+
+.pull-right[
+```{r, echo = FALSE}
+ggplot(data = gap2007, aes(x = gdpPercap, y = lifeExp)) +
+  geom_point() +
+  geom_smooth()
+
+```
+]
+
+---
+
+## Scenario: Raw Data + Regression Line
+
+We want to represent the same data, using a summary as well as the raw data.
+
+We can do this by **layering** `geoms`.
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = gap2007,
+  aes(x = gdpPercap, y = lifeExp)
+) +
+  geom_point() +
+  geom_smooth() +
+  geom_rug() #<<
+
+```
+]
+
+.pull-right[
+```{r, echo = FALSE}
+ggplot(data = gap2007, aes(x = gdpPercap, y = lifeExp)) +
+  geom_point() +
+  geom_smooth() +
+  geom_rug()
+
+```
+]
+
+---
+
+# Your Turn!
+
+Summarize and show raw data for each country's gross domestic product (`gdpPercap`).
+
+For extra credit 😁, do this separately for each **continent**.
+
+- What `geoms` would you use?
+- What `aesthetics` would you use?
+
+--
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = gap2007,
+  aes(x = continent, y = gdpPercap)
+) +
+  geom_boxplot() +
+  geom_point()
+
+```
+
+### What would you change?
+
+]
+
+.pull-right[
+```{r, echo = FALSE, out.height = 300, fig.asp = 0.7}
+ggplot(
+  data = gap2007,
+  aes(x = continent, y = gdpPercap)
+) +
+  geom_boxplot() +
+  geom_point()
+
+```
+]
+
+---
+
+# Positions
+
+`positions` help us change the position of data a bit. Positions are still based on `aesthetics`, but sometimes it is helpful to modify those values.
+
+For example, you may have many single points with the same value, or several groups contained within one value.
+
+--
+
+Common `position` functions:
+
+- `position_dodge()`: vertical position stays the same; horizontal changes
+- `position_stack()`: stacks bars on top of one another
+- `position_fill()`: stacks bars *and* standardizes each to the same height
+- `position_jitter()`: adds random noise to values to avoid overplotting
+
+---
+
+# Example: Barcharts
+
+.pull-left[
+```{r}
+rct_df <- data.frame(
+  trt = factor(c("A", "A", "B", "B")),
+  sex = factor(rep(c("Male", "Female"), 2)),
+  npts = c(52, 48, 65, 75)
+)
+
+```
+
+```{r, eval = FALSE}
+ggplot(
+  data = rct_df,
+  aes(x = trt, y = npts,
+      group = sex, fill = sex)
+) +
+  geom_bar(
+    stat = "identity",
+    position = position_dodge() #<<
+  )
+
+```
+]
+
+.pull-right[
+### `position_dodge()`
+```{r, echo = FALSE, out.height = 350}
+ggplot(data = rct_df, aes(x = trt, y = npts, group = sex, fill = sex)) +
+  geom_bar(stat = "identity", position = position_dodge())
+
+```
+]
+
+---
+
+# Example: Barcharts
+
+.pull-left[
+```{r, eval = FALSE}
+rct_df <- data.frame(
+  trt = factor(c("A", "A", "B", "B")),
+  sex = factor(rep(c("Male", "Female"), 2)),
+  npts = c(52, 48, 65, 75)
+)
+
+```
+
+```{r, eval = FALSE}
+ggplot(
+  data = rct_df,
+  aes(x = trt, y = npts,
+      group = sex, fill = sex)
+) +
+  geom_bar(
+    stat = "identity",
+    position = position_stack() #<<
+  )
+
+```
+]
+
+.pull-right[
+### `position_stack()`
+```{r, echo = FALSE, out.height = 350}
+ggplot(data = rct_df, aes(x = trt, y = npts, group = sex, fill = sex)) +
+  geom_bar(stat = "identity", position = position_stack())
+
+```
+]
+
+---
+
+# Example: Barcharts
+
+.pull-left[
+```{r}
+rct_df <- data.frame(
+  trt = factor(c("A", "A", "B", "B")),
+  sex = factor(rep(c("Male", "Female"), 2)),
+  npts = c(52, 48, 65, 75)
+)
+
+```
+
+```{r, eval = FALSE}
+ggplot(
+  data = rct_df,
+  aes(x = trt, y = npts,
+      group = sex, fill = sex)
+) +
+  geom_bar(
+    stat = "identity",
+    position = position_fill() #<<
+  )
+
+```
+]
+
+.pull-right[
+### `position_fill()`
+```{r, echo = FALSE, out.height = 350}
+ggplot(data = rct_df, aes(x = trt, y = npts, group = sex, fill = sex)) +
+  geom_bar(stat = "identity", position = position_fill())
+
+```
+]
+
+---
+
+# Positions
+
+Because `positions` are *functions*, we can add arguments to control them further.
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = rct_df,
+  aes(x = trt, y = npts,
+      group = sex, fill = sex)
+) +
+  geom_bar(
+    stat = "identity",
+    position =
+      position_dodge2(padding = 0.2) #<<
+  )
+
+```
+]
+
+.pull-right[
+```{r, echo = FALSE}
+ggplot(data = rct_df, aes(x = trt, y = npts, group = sex, fill = sex)) +
+  geom_bar(stat = "identity", position = position_dodge2(padding = 0.2))
+
+```
+]
+
+---
+
+# Positions
+
+But if we want the default position settings, we can use shortcuts:
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = rct_df,
+  aes(x = trt, y = npts,
+      group = sex, fill = sex)
+) +
+  geom_bar(
+    stat = "identity",
+    position = "dodge2" #<<
+  )
+
+```
+]
+
+.pull-right[
+```{r, echo = FALSE}
+ggplot(data = rct_df, aes(x = trt, y = npts, group = sex, fill = sex)) +
+  geom_bar(stat = "identity", position = "dodge2")
+
+```
+]
+
+---
+
+# Your Turn!
+
+Take the boxplot we made earlier and use a `position` to reduce the overplotting of the raw data.
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = gap2007,
+  aes(x = continent, y = gdpPercap)
+) +
+  geom_boxplot() +
+  geom_point()
+
+```
+
+]
+
+.pull-right[
+```{r, echo = FALSE, out.height = 300, fig.asp = 0.7}
+ggplot(
+  data = gap2007,
+  aes(x = continent, y = gdpPercap)
+) +
+  geom_boxplot() +
+  geom_point()
+
+```
+]
+
+---
+
+# Your Turn!
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = gap2007,
+  aes(x = continent, y = gdpPercap)
+) +
+  geom_boxplot() +
+  geom_point(
+    position = "jitter" #<<
+  )
+
+```
+
+]
+
+.pull-right[
+```{r, echo = FALSE, out.height = 300, fig.asp = 0.7}
+ggplot(
+  data = gap2007,
+  aes(x = continent, y = gdpPercap)
+) +
+  geom_boxplot() +
+  geom_point(position = "jitter")
+
+```
+]
+
+---
+
+# Your Turn!
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = gap2007,
+  aes(x = continent, y = gdpPercap)
+) +
+  geom_boxplot() +
+  geom_point(
+    position =
+      position_jitter(width = 0.25) #<<
+  )
+
+```
+
+]
+
+.pull-right[
+```{r, echo = FALSE, out.height = 300, fig.asp = 0.7}
+ggplot(
+  data = gap2007,
+  aes(x = continent, y = gdpPercap)
+) +
+  geom_boxplot() +
+  geom_point(position = position_jitter(width = 0.2))
+
+```
+]
+
+---
+
+# Inheritance
+
+### Did You Notice...
+
+...so far, we have only explicitly specified our `data` and `aesthetics` in the initial `ggplot()` call?
+
+Even when we had three separate layers!
+
+--
+
+`ggplot2` uses **inheritance**. This means that each layer uses the same `data` and `aesthetics` set in `ggplot(...)`, unless we tell it otherwise.
+
+- **Simplicity**: Inheritance means we don't have to specify data and aesthetics multiple times
+- **Power**: We can use different datasets or aesthetics for each layer if we want to
+
+---
+
+## Example of Inheritance: Marginal Effects Plots
+
+.pull-left[
+We may show the point estimate and confidence interval for a continuous variable from a linear regression model using `geom_line` and `geom_ribbon`, then show the *original, unadjusted* data using `geom_point`.
+
+```{r, echo = FALSE, out.height = 300}
+library(rms)
+
+dd_gap <- datadist(gap2007)
+options(datadist = "dd_gap")
+
+gap_mod <- ols(gdpPercap ~ rcs(lifeExp, 4) + rcs(pop, 4), data = gap2007)
+gap_pred <- as.data.frame(Predict(gap_mod, lifeExp = NA))
+
+ggplot(data = gap_pred, aes(x = lifeExp, y = yhat)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.3) +
+  geom_line() +
+  geom_point(data = gap2007, aes(x = lifeExp, y = gdpPercap))
+
+```
+]
+
+.pull-right[
+```{r, eval = FALSE}
+ggplot(
+  data = predvals,
+  aes(x = pointest, y = adjvalue)
+) +
+  ## Use inherited data;
+  ##  specify aesthetics
+  geom_ribbon(
+    aes(ymin = lcl, ymax = ucl)
+  ) +
+  ## Use inherited data + aesthetics
+  geom_line() +
+  ## Add raw data
+  geom_point(
+    aes(x = covar, y = orgvalue),
+    data = orgdata
+  )
+```
+]
+
+---
+
+class: inverse, middle, center
+
+# ⚖️ Scales for Details ⚖️
+
+.pull-left[
+## aesthetics
+
+**What** data is mapped to which plot characteristic
+
+]
+
+.pull-right[
+## scales
+
+**How** to map data to plot characteristics
+]
+
+---
+
+## Boxplot Example
+
+.pull-left[
+### `aes(thetics)`
+
+Put `gdpPercap` on Y axis
+
+```{r, eval = FALSE}
+ggplot(
+  data = gap2007,
+  aes(x = continent, y = gdpPercap)
+) +
+  geom_boxplot() +
+  geom_point() +
+  scale_y_continuous(            #<<
+    limits = c(0, 5000),         #<<
+    breaks = seq(0, 5000, 1025), #<<
+    labels = scales::comma,      #<<
+    name = "GDP per Capita"      #<<
+  )                              #<<
+
+```
+]
+
+.pull-right[
+### `scales`
+
+- Set the axis limits
+- "Break" axis at these places
+- "Name" the axis "GDP Per Capita"
+
+```{r, echo = FALSE, fig.height = 250, fig.asp = 0.5}
+ggplot(
+  data = gap2007,
+  aes(x = continent, y = gdpPercap)
+) +
+  geom_boxplot() +
+  geom_point() +
+  scale_y_continuous(
+    limits = c(0, 50000),
+    breaks = seq(0, 50000, 5000),
+    labels = scales::comma,
+    name = "GDP per Capita"
+  )
+
+```
+
+]
+
+**Note**: `ggplot2` automatically set gridlines at our break points!
+
+---
+## Barchart Example
+
+**Note** how `scales` control the legend!
+
+.pull-left[
+## `aesthetics`
+
+"Fill" the bars with colors by sex
+
+```{r, eval = FALSE}
+ggplot(
+  data = rct_df,
+  aes(x = trt, y = npts,
+      group = sex, fill = sex)
+) +
+  geom_bar(
+    stat = "identity",
+    position = "dodge2"
+  ) +
+{{  scale_fill_hue(
+    h = c(90, 270), l = 40,
+      ## change *hues*, *lightness*
+    name = "Patient Sex"
+      ## change *name*
+  ) }}
+
+```
+]
+
+.pull-right[
+## `scales`
+
+- Use a different color palette
+- Change name to "Patient sex"
+
+```{r, echo = FALSE, fig.height = 250, fig.asp = 0.8}
+ggplot(data = rct_df, aes(x = trt, y = npts, group = sex, fill = sex)) +
+  geom_bar(stat = "identity", position = "dodge2") +
+  scale_fill_hue(h = c(90, 270), l = 40, name = "Patient Sex")
+```
+]
+
+---
+
+# Controlling Non-Data Elements
+
+In our last plot, we can see the data *somewhat*, but because there is so much, it's hard to see all of it.
+
+To control aspects of our plots not directly related to our data, we can still use aesthetic qualities, but we will set them *outside* the `aes(...)` function.
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = gap2007,
+  aes(x = gdpPercap, y = lifeExp)
+) +
+  geom_point(
+    color = "#a7a9ac",
+    alpha = 0.75,
+    size = 0.5
+  ) +
+  geom_smooth(
+    fill = "#532354",
+    color = "#b756b9",
+    alpha = 0.2
+  ) +
+  geom_rug(
+    alpha = 0.3,
+    color = "#532354"
+  )
+
+```
+]
+
+.pull-right[
+```{r, echo = FALSE}
+ggplot(data = gap2007, aes(x = gdpPercap, y = lifeExp)) +
+  geom_point(color = "#a7a9ac", alpha = 0.75, size = 0.5) +
+  geom_smooth(fill = "#532354", color = "#b756b9", alpha = 0.2) +
+  geom_rug(alpha = 0.3, color = "#532354")
+
+```
+]
