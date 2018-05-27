@@ -1119,11 +1119,306 @@ Both have these arguments (among others):
 
 ---
 
-# Controlling Non-Data Elements
+### `facet_grid()` example
 
-In our last plot, we can see the data *somewhat*, but because there is so much, it's hard to see all of it.
+*First + last years available for each continent in the `gapminder` data*
 
-To control aspects of our plots not directly related to our data, we can still use aesthetic qualities, but we will set them *outside* the `aes(...)` function.
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = subset(
+    gapminder,
+    year %in% c(1952, 2007) &
+      !(continent == "Oceania")
+  ),
+  aes(x = gdpPercap, y = lifeExp)
+) +
+  facet_grid(year ~ continent) + #<<
+  geom_point() +
+  geom_smooth()
+
+```
+]
+
+.pull-right[
+```{r, echo = FALSE}
+ggplot(
+  data = subset(
+    gapminder,
+    year %in% c(1952, 2007) &
+      !(continent == "Oceania")
+  ),
+  aes(x = gdpPercap, y = lifeExp)
+) +
+  facet_grid(year ~ continent) +
+  geom_point() +
+  geom_smooth()
+
+```
+]
+
+--
+
+Leaving scales consistent between panels is great for comparisons between panels (like here). If we are more interested in informing than comparison, we may want to let the scales vary by panel.
+
+---
+
+### `facet_grid()` example
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = subset(
+    gapminder,
+    year %in% c(1952, 2007) &
+      !(continent == "Oceania")
+  ),
+  aes(x = gdpPercap, y = lifeExp)
+) +
+  facet_grid(
+    year ~ continent,
+    scales = "free_x" #<<
+  ) +
+  geom_point() +
+  geom_smooth()
+
+```
+]
+
+.pull-right[
+```{r, echo = FALSE}
+ggplot(
+  data = subset(
+    gapminder,
+    year %in% c(1952, 2007) &
+      !(continent == "Oceania")
+  ),
+  aes(x = gdpPercap, y = lifeExp)
+) +
+  facet_grid(year ~ continent, scales = "free_x") +
+  geom_point() +
+  geom_smooth()
+
+```
+]
+
+--
+
+The X axis scales for each column are still the same for the two *rows*, allowing us to see the differences between 1952 and 2007 clearly for each continent.
+
+But the X axis scales are different from *column to column*; we can see the relationships for Africa without being affected by the larger GDPs found in Europe, for example.
+
+---
+
+# Your Turn!
+
+Using the original `gapminder` data for 1952 and 2007, update your boxplots of GDP by continent to show one column for each of those two years, and one row for each continent.
+
+*Hint: You can set the X aesthetic to always be 1.*
+
+--
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = subset(
+    gapminder, year %in% c(1952, 2007)
+  ),
+  aes(
+    x = 1,        #<<
+    y = gdpPercap
+  )
+) +
+{{ facet_grid(
+    continent ~ year,
+    scales = "free_y"
+  ) + }}
+  geom_boxplot() +
+  geom_point()
+
+```
+]
+
+.pull-right[
+```{r, echo = FALSE, fig.height = 350, fig.asp = 0.75}
+ggplot(data = subset(gapminder, year %in% c(1952, 2007)),
+       aes(x = 1, y = gdpPercap)) +
+  facet_grid(continent ~ year, scales = "free_y") +
+  geom_boxplot() +
+  geom_point()
+
+```
+]
+
+---
+
+class: inverse, middle, center
+
+# 🌺 Themes 🌺
+
+Give your plots a different look
+
+Control plot elements not related to data
+
+---
+
+# Change the look of your plot
+
+Using `ggplot2 themes`, it is easy to give your plots a different look with one line.
+
+```{r}
+p <- ggplot(data = gap2007, aes(x = gdpPercap, y = lifeExp)) +
+  geom_point()
+
+```
+
+.pull-left[
+```{r, fig.height = 5}
+p + theme_bw()
+
+```
+]
+
+.pull-right[
+```{r, fig.height = 5}
+p + theme_minimal()
+
+```
+]
+
+---
+
+# Changing Plot Elements with `themes`
+
+We also use `themes` to change elements of the plot that are not related to `data`:
+
+.pull-left[
+- Increase font sizes
+- Change colors or font faces
+- Change plot backgrounds, gridlines
+
+```{r, fig.height = 5.5}
+p + theme_minimal()
+
+```
+]
+
+.pull-right[
+```{r, fig.height = 5.5}
+p + theme_minimal() +
+  theme(
+    panel.border = element_rect(
+      fill = NA,
+      color = "#b756b9",
+      size = 5
+    )
+  )
+```
+
+]
+
+---
+
+# `elements`
+
+Pieces of the `theme` are controlled by the `element` functions *(examples)*:
+
+- `element_line()`: gridlines, axis lines
+- `element_text()`: axis labels, titles, captions
+- `element_rect()`: plot and panel backgrounds, `facet` strip backgrounds
+- `element_blank()`: can be used for any element to "make it disappear"
+
+Use these functions to set aspects like sizes, colors, font faces...
+
+---
+
+# Your Turn!
+
+Give a boxplot we made earlier a different overall `theme`, then customize at least one element. You might...
+
+- Make the axis text **bold** or bigger
+- Make the gridlines thicker or disappear
+- Make the `strip.background` a different color
+
+--
+
+```{r, echo = FALSE}
+p <- ggplot(
+  data = subset(gapminder, year %in% c(1952, 2007)),
+  aes(x = 1, y = gdpPercap)
+) +
+  facet_grid(continent ~ year, scales = "free_y") +
+  geom_boxplot(outlier.shape = NA) +
+  geom_point(
+    aes(color = continent),
+    alpha = 0.5, position = position_jitter(width = 0.2)
+  )
+
+```
+
+.pull-left[
+```{r, eval = FALSE}
+p +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_blank(),
+    strip.background =
+      element_rect(fill = "gray90"),
+    panel.background =
+      element_rect(fill = NA, color = "gray90"),
+    legend.position = "none"
+  )
+
+```
+]
+
+.pull-right[
+```{r, echo = FALSE, fig.asp = 0.75}
+p + theme_minimal() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_blank(),
+    strip.background = element_rect(fill = "gray90"),
+    panel.background = element_rect(fill = NA, color = "gray90"),
+    legend.position = "none"
+  )
+
+```
+]
+
+---
+
+# Adding Labels and Titles
+
+We may want to add a title to our plot, or a caption to give additional information about how something was defined. Maybe we want to name an aesthetic "Patient Sex" instead of "sex" but with less typing than `scale_x_discrete(name = "Patient Sex")`.
+
+`labs()` allows us to set these elements:
+
+- `title`
+- `subtitle`
+- `caption`
+- titles for `aesthetics` (these will show up in the legend, or X/Y axis titles)
+
+```{r, eval = FALSE}
+p +
+  labs(x = "My X axis title")
+
+```
+
+--
+
+## Your Turn!
+
+Use `labs()` to add a plot title and change the Y axis title on the plot you just made.
+
+---
+
+## Controlling Non-Data Elements
+
+To control elements of the plot that *represent* data, but not in a way directly *tied* to our data, we can still use aesthetic qualities. However, we will set them *outside* the `aes(...)` function.
+
+**Example:** We want all our points to be a certain color, or to make a line width thicker to be seen better in a presentation.
 
 .pull-left[
 ```{r, eval = FALSE}
@@ -1134,16 +1429,16 @@ ggplot(
   geom_point(
     color = "#a7a9ac",
     alpha = 0.75,
-    size = 0.5
+    size = 1.25
   ) +
   geom_smooth(
     fill = "#532354",
     color = "#b756b9",
-    alpha = 0.2
+    alpha = 0.2,
+    size = 2
   ) +
   geom_rug(
-    alpha = 0.3,
-    color = "#532354"
+    alpha = 0.3, color = "#532354"
   )
 
 ```
@@ -1152,8 +1447,8 @@ ggplot(
 .pull-right[
 ```{r, echo = FALSE}
 ggplot(data = gap2007, aes(x = gdpPercap, y = lifeExp)) +
-  geom_point(color = "#a7a9ac", alpha = 0.75, size = 0.5) +
-  geom_smooth(fill = "#532354", color = "#b756b9", alpha = 0.2) +
+  geom_point(color = "#a7a9ac", alpha = 0.75, size = 1.25) +
+  geom_smooth(fill = "#532354", color = "#b756b9", alpha = 0.2, size = 2) +
   geom_rug(alpha = 0.3, color = "#532354")
 
 ```
