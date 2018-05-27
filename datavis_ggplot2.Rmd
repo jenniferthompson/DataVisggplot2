@@ -52,6 +52,8 @@ We will understand how:
 1. General overview of key concepts: `aesthetics`, `geoms`, layering, `scales`, `facets`, `themes`
 1. "Cookbook" approach to demonstrate details
 
+**Note**: This is not an exhaustive tutorial; it is an overview of the features I use most often. Much more at `ggplot2.tidyverse.org`!
+
 ---
 
 # The Grammar of Graphics
@@ -1004,7 +1006,116 @@ ggplot(data = rct_df, aes(x = trt, y = npts, group = sex, fill = sex)) +
 
 ---
 
+# Types of `scales`
 
+**Scales** generally correspond to **aesthetics**. Some common scale types:
+
+- `scale_[x, y]_[continuous/discrete]`
+- `scale_[colour, fill]_[many options!]`
+- `scale_size_...`, `scale_shape_...`, `scale_alpha_...`
+
+This is *not* an exhaustive list. See the [`ggplot2` reference pages](http://ggplot2.tidyverse.org/reference/index.html) for more options.
+
+*Note: For `color` scales and aesthetics, you can use either `color` or `colour`.*
+
+--
+
+`scales` have intelligent default values, but you can use different scale types to use specific values you choose. Examples:
+
+- A particular color palette
+- Beginning and ending sizes (maybe you want the smallest size to still be seen on a projector)
+- Breaks on X, Y axes at clinically relevant points
+
+---
+
+# Your Turn!
+
+Using the boxplot we made earlier, use `scales` *(and maybe `aesthetics`)* to
+
+1. Change the name of the X axis
+1. Make each country's raw data a different color
+1. *Not* include a legend
+
+`?scale_x_discrete`
+
+`?scale_color_hue`
+
+--
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = gap2007,
+  aes(x = continent, y = gdpPercap)
+) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_point(
+    aes(color = continent), #<<
+    position =
+      position_jitter(width = 0.2),
+    alpha = 0.6
+  ) +
+  scale_x_discrete(name="Continent") + #<<
+  scale_color_hue(guide = FALSE)       #<<
+
+```
+]
+
+.pull-right[
+```{r, echo = FALSE, fig.height = 250, fig.asp = 0.7}
+ggplot(data = gap2007, aes(x = continent, y = gdpPercap)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_point(
+    aes(color = continent),
+    position = position_jitter(width = 0.2), alpha = 0.6
+  ) +
+  scale_x_discrete(name = "Continent") +
+  scale_color_hue(guide = FALSE)
+
+```
+]
+
+---
+
+class: inverse, middle, center
+
+# 🔠 Same Concept, Many `facets` 🔢
+
+We can use `facets` to show the same visualization for related groups.
+
+---
+
+# Example: GDP vs Life Expectancy
+
+```{r, fig.height = 400, fig.asp = 0.7}
+ggplot(data = gap2007, aes(x = gdpPercap, y = lifeExp)) +
+  facet_wrap(~ continent) + #<<
+  geom_point() +
+  geom_smooth()
+
+```
+---
+
+.pull-left[
+## `facet_wrap()`
+
+You have **one** categorical variable
+]
+
+.pull-right[
+## `facet_grid()`
+
+You have **two** categorical variables, want to show each combination
+]
+
+<hr>
+
+Both have these arguments (among others):
+
+- `nrow`, `ncol`: if you want a specific layout
+- `scales`
+    - `fixed`: default; same for every panel
+    - `free_y`, `free_x`, `free`: allow X and/or Y axis to change for each panel
 
 ---
 
