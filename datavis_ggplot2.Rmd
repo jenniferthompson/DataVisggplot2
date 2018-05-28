@@ -1453,3 +1453,332 @@ ggplot(data = gap2007, aes(x = gdpPercap, y = lifeExp)) +
 
 ```
 ]
+
+---
+
+class: inverse, center, middle
+
+# 🌎 Full Examples with `gapminder` 🌏
+
+---
+
+## Goal
+
+Create a publication-quality chart showing the relationship between gross domestic product and life expectancy, 1952 and 2007.
+
+### Preparation
+
+.pull-left[
+
+1) Create a subset of the data
+```{r}
+## Only look at 1952, 2007
+gap_sub <- subset(
+  gapminder,
+  year %in% c(1952, 2007)
+)
+
+```
+
+2) Initialize our plot object
+
+```{r}
+gdp_exp <- ggplot(
+  data = gap_sub,
+  aes(x = gdpPercap, y = lifeExp)
+)
+```
+]
+
+.pull-right[
+```{r, fig.height = 5.5}
+gdp_exp
+```
+]
+
+---
+
+## `facet` by year and continent
+
+```{r}
+gdp_exp <- gdp_exp +
+  facet_grid(year ~ continent)
+```
+
+```{r, echo = FALSE, fig.width = 10, fig.asp = 0.6}
+gdp_exp
+```
+
+---
+
+## Add data points
+
+We want to use a different color for each country, and make our point sizes vary according to the countries' population size.
+
+```{r}
+gdp_exp <- gdp_exp +
+  geom_point(
+    aes(color = country, size = pop),
+    alpha = 0.6 ## to help overplotting
+  )
+```
+
+--
+
+```{r, echo = FALSE, fig.width = 8, fig.asp = 0.5}
+gdp_exp
+```
+
+---
+
+## 😱 Fix it! With `scales`
+
+As we saw, a legend will not be helpful here - there are too many countries.
+
+However, a legend *would* be helpful for the population sizes.
+
+We will use two `scales` to
+
+1) Specify the colors we want, using `scale_color_manual` and `country_colors`, a named vector of hex colors that comes with the `gapminder` package
+
+```{r}
+head(country_colors)
+```
+
+2) Format a legend for our population sizes
+
+---
+
+## Modification of `scales`
+
+.pull-left[
+```{r}
+gdp_exp <- gdp_exp +
+  scale_color_manual(
+    ## Manually specify colors
+    values = country_colors,
+    ## Turn off the legend for colors
+    guide = FALSE
+  ) +
+  scale_size(
+    range = c(3, 7),
+    labels = function(x){
+      scales::comma(x / 1000000)
+    },
+    name =
+      "Population\n(x 1M)"
+  )
+  
+```
+]
+
+.pull-right[
+```{r, echo = FALSE}
+gdp_exp
+```
+]
+
+---
+
+# Exploratory data analysis
+
+We see that there is a lot of space on the X axis that may be unnecessary, possibly caused by one point. What point is it?
+
+.pull-left[
+```{r, eval = FALSE}
+ggplot(
+  data = gap_sub,
+  aes(x = gdpPercap)
+) +
+  geom_histogram()
+```
+]
+
+.pull-right[
+```{r, echo = FALSE, fig.height = 4}
+ggplot(data = gap_sub, aes(x = gdpPercap)) +
+  geom_histogram()
+```
+]
+
+--
+
+The extreme outlier in 1952 is from Kuwait; looking at other years in the `gapminder` data, it seems to be a legitimate value, but including it is keeping us from seeing the other data as clearly.
+
+We'll exclude it from our plot, but will make a note in a figure caption.
+
+---
+
+# Modify X axis `scale`
+
+```{r}
+## Save X axis title to a string so we can see the whole thing
+xtitle <- "Gross Domestic Product per Capita\n(x $1,000 USD)"
+```
+
+.pull-left[
+```{r}
+gdp_exp <- gdp_exp +
+  scale_x_continuous(
+    limits = c(0, 55000),
+    labels = function(x){
+      scales::dollar(x / 1000)
+    },
+    name = xtitle
+  )
+
+```
+]
+
+.pull-right[
+```{r, echo = FALSE}
+gdp_exp
+
+```
+]
+
+---
+
+## Add Labels
+
+```{r}
+plottitle <- "GDP vs Life Expectancy, 1952 and 2007"
+captitle <- sprintf(
+  "Kuwait's 1952 values were excluded due to its extremely high GDP of $%s.\nAverage life expectancy at that time was %s.",
+  format(
+    round(subset(gap_sub, year == 1952 & country == "Kuwait")$gdpPercap),
+    big.mark = ","
+  ),
+  round(subset(gap_sub, year == 1952 & country == "Kuwait")$lifeExp, 1)
+)
+```
+
+.pull-left[
+```{r}
+gdp_exp <- gdp_exp +
+  labs(
+    title = plottitle,
+    subtitle =
+      "Source: gapminder.org/data",
+    caption = captitle,
+    y = "Life Expectancy (Years)"
+  )
+```
+]
+
+.pull-right[
+```{r, echo = FALSE, fig.asp = 0.7}
+gdp_exp
+```
+]
+
+---
+
+# Modify Theme Elements
+
+.pull-left[
+We want to
+
+- Add space between the X axis and title
+- Add space between X axis title and caption
+- Italicize the caption
+- Bold plot titles, axis titles, and strip text
+- Move the legend to the bottom
+]
+
+.pull-right[
+```{r}
+gdp_exp <- gdp_exp +
+  theme_bw() +
+  theme(
+    plot.title = element_text(
+      face = "bold", size = 16
+    ),
+    axis.title.x = element_text(
+      vjust = 0
+    ),
+    plot.caption = element_text(
+      vjust = 0, face = "italic"
+    ),
+    strip.text = element_text(
+      face = "bold", size = 12
+    ),
+    legend.position = "bottom",
+    legend.direction = "horizontal"
+  )
+```
+]
+
+---
+
+# Final Result
+
+```{r, echo = FALSE, fig.width = 10}
+gdp_exp
+```
+
+---
+
+# Your Turn!
+
+Using any of these strategies (or others!), make changes to the boxplots we've been working with. Be creative!
+
+Some ideas:
+
+- Changing the color of the boxplots, or removing the inside altogether
+- Changing the breaks of the Y axis
+- Adding axis, plot titles
+- Citing the source of our data
+
+Any other ideas are welcome!
+
+---
+
+# Saving Your Plots
+
+The `ggsave` function allows us to easily save our figures in several formats. For example, you might want to create a PDF of the figure for a journal submission, but have a PNG for PowerPoint presentations.
+
+.pull-left[
+```{r}
+ggsave(
+  filename =                    #<<
+    "gapminder_gdplifeexp.pdf", #<<
+  gdp_exp,
+  device = "pdf",               #<<
+  path = "figures/",
+  width = 10,
+  height = 7,
+  units = "in"
+)
+```
+]
+
+.pull-right[
+```{r}
+ggsave(
+  filename =                    #<<
+    "gapminder_gdplifeexp.png", #<<
+  gdp_exp,
+  device = "png",               #<<
+  path = "figures/",
+  width = 10,
+  height = 7,
+  units = "in"
+)
+```
+]
+
+--
+
+## Your Turn!
+
+Save the results of your plot to a `figures/` directory in two different formats.
+
+---
+
+# Helpful Resources
+
+- [`ggplot2` reference page](ggplot2.tidyverse.org)
+- ColorBrewer
+- Cookbook for R
+- Grammar of Graphics
