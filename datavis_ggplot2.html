@@ -50,7 +50,7 @@ We will understand how:
 ## Plan
 
 1. General overview of key concepts: `aesthetics`, `geoms`, layering, `scales`, `facets`, `themes`
-1. "Cookbook" approach to demonstrate details
+1. Step-by-step example, to demonstrate details
 
 **Note**: This is not an exhaustive tutorial; it is an overview of the features I use most often. Much more at `ggplot2.tidyverse.org`!
 
@@ -158,11 +158,7 @@ class: inverse, middle, center
 
 `ggplot(data = ..., ...)`
 
---
-
 Everything **starts** with a data.frame.
-
---
 
 Anything that represents **data** on the plot must be within a data.frame.
 
@@ -184,10 +180,10 @@ print(head(df, n = 3), digits = 2)
 ```
 
 ```
-##     xvar    yvar
-## 1 -0.988 -0.8450
-## 2  0.124  0.1222
-## 3 -0.013 -0.0013
+##   xvar yvar
+## 1  0.2 0.16
+## 2  1.1 0.55
+## 3  0.7 0.47
 ```
 
 
@@ -206,10 +202,10 @@ print(head(df, n = 3), digits = 2)
 ```
 
 ```
-##     xvar    yvar
-## 1 -0.988 -0.8450
-## 2  0.124  0.1222
-## 3 -0.013 -0.0013
+##   xvar yvar
+## 1  0.2 0.16
+## 2  1.1 0.55
+## 3  0.7 0.47
 ```
 
 
@@ -972,6 +968,43 @@ ggplot(
 
 ---
 
+# Choosing a color scale
+
+By default, `ggplot2` uses color scales that allow for the most difference between categories on a [color wheel](), or to show a spectrum of continuous values.
+
+You can change these defaults in several ways, including:
+
+- Tweak the defaults with `scale_color_hue()` or `scale_color_gradient()` - for example, change the gradient color from the default blue to green, or change the range of hues for a categorical variable
+- Use one of the built-in ColorBrewer schemes, which are built to handle sequential, diverging, and qualitative color schemes (`scale_color_brewer()` for categorical, `scale_color_distiller()` for continuous)
+- Supply a manual color scheme, using words like `"blue"` or hex colors (eg, `#FAFAFA`): `scale_color_manual()`
+- I personally like the `viridis` color schemes. *(These are not currently included in `ggplot2` itself, but will be in the next version released to CRAN this summer. You can install the `viridisLite` package to use them now. **ADD LINK**)* These scales print well, even in black &amp; white, and are built to be perceived by people with color blindness.
+
+(All scale options above also apply to `scale_fill_xxxx`)
+
+---
+
+# `viridis` example
+
+.pull-left[
+
+```r
+library(viridisLite)
+
+ggplot(
+  data = df,
+  aes(x = xvar, y = yvar)
+) +
+  geom_point(aes(color = xvar)) +
+  scale_color_viridis_c()
+```
+]
+
+.pull-right[
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-45-1.png)&lt;!-- --&gt;
+]
+
+---
+
 class: inverse, middle, center
 
 # 🔠 Same Concept, Many `facets` 🔢
@@ -990,7 +1023,7 @@ ggplot(data = gap2007, aes(x = gdpPercap, y = lifeExp)) +
   geom_smooth()
 ```
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-44-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-46-1.png)&lt;!-- --&gt;
 ---
 
 .pull-left[
@@ -1038,7 +1071,7 @@ ggplot(
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-46-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-48-1.png)&lt;!-- --&gt;
 ]
 
 --
@@ -1070,7 +1103,7 @@ ggplot(
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-48-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-50-1.png)&lt;!-- --&gt;
 ]
 
 --
@@ -1111,7 +1144,7 @@ ggplot(
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-50-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-52-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1142,7 +1175,7 @@ p &lt;- ggplot(data = gap2007, aes(x = gdpPercap, y = lifeExp)) +
 p + theme_bw()
 ```
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-52-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-54-1.png)&lt;!-- --&gt;
 ]
 
 .pull-right[
@@ -1151,7 +1184,7 @@ p + theme_bw()
 p + theme_minimal()
 ```
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-53-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-55-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1170,7 +1203,7 @@ We also use `themes` to change elements of the plot that are not related to `dat
 p + theme_minimal()
 ```
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-54-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-56-1.png)&lt;!-- --&gt;
 ]
 
 .pull-right[
@@ -1186,7 +1219,7 @@ p + theme_minimal() +
   )
 ```
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-55-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-57-1.png)&lt;!-- --&gt;
 
 ]
 
@@ -1235,7 +1268,7 @@ p +
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-58-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-60-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1296,7 +1329,7 @@ ggplot(
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-61-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-63-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1342,7 +1375,7 @@ gdp_exp &lt;- ggplot(
 gdp_exp
 ```
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-64-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-66-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1355,7 +1388,7 @@ gdp_exp &lt;- gdp_exp +
   facet_grid(year ~ continent)
 ```
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-66-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-68-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -1374,7 +1407,7 @@ gdp_exp &lt;- gdp_exp +
 
 --
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-68-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-70-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -1428,7 +1461,7 @@ gdp_exp &lt;- gdp_exp +
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-71-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-73-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1449,7 +1482,7 @@ ggplot(
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-73-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-75-1.png)&lt;!-- --&gt;
 ]
 
 --
@@ -1483,7 +1516,7 @@ gdp_exp &lt;- gdp_exp +
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-76-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-78-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1518,7 +1551,7 @@ gdp_exp &lt;- gdp_exp +
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-79-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-81-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1563,13 +1596,13 @@ gdp_exp &lt;- gdp_exp +
 
 # Final Result
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-81-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-83-1.png)&lt;!-- --&gt;
 
 ---
 
 # Your Turn!
 
-Using any of these strategies (or others!), make changes to the boxplots we've been working with. Be creative!
+Using any of these strategies (or others!), make changes to the boxplots we've been working with.
 
 Some ideas:
 
@@ -1584,7 +1617,7 @@ Any other ideas are welcome!
 
 # Saving Your Plots
 
-`ggplot2` has the `ggsave` function, which allows you to easily save your figures in several formats. For example, you might want to create a PDF of the figure for a journal submission, but have a PNG for PowerPoint presentations.
+The `ggsave` function allows us to easily save our figures in several formats. For example, you might want to create a PDF of the figure for a journal submission, but have a PNG for PowerPoint presentations.
 
 .pull-left[
 
@@ -1629,9 +1662,16 @@ Save the results of your plot to a `figures/` directory in two different formats
 # Helpful Resources
 
 - [`ggplot2` reference page](ggplot2.tidyverse.org)
-- ColorBrewer
 - Cookbook for R
-- Grammar of Graphics
+- [Data visualization](http://r4ds.had.co.nz/data-visualisation.html) and [graphics for communication](http://r4ds.had.co.nz/graphics-for-communication.html), *R for Data Science*
+- [`ggplot2` extensions](http://www.ggplot2-exts.org/gallery/), for `geoms` that are not included in `ggplot2` itself
+- [`ggthemr`]() for building custom themes and color palettes *(not currently on CRAN; install from Github)*
+- Color palettes:
+    - ColorBrewer
+    - [colorhexa.com](colorhexa.com)
+- Theoretical basis:
+    - [`ggplot2`: Elegant Graphics for Data Analysis](http://amzn.to/2fncG50)
+    - [Grammar of Graphics]()
     </textarea>
 <script src="libs/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
