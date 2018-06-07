@@ -1088,30 +1088,36 @@ You can change these defaults in several ways, including:
 
 ---
 
-# `viridis` example
+# Color Scale Examples: Default Hues
 
-.pull-left[
-```{r, eval = FALSE}
-library(viridisLite)
-
-ggplot(
-  data = df,
-  aes(x = xvar, y = yvar)
-) +
-  geom_point(aes(color = xvar)) +
-  scale_color_viridis_c()
+```{r}
+p <- ggplot(data = gap2007, aes(x = gdpPercap, y = lifeExp)) +
+  geom_point(aes(color = country, size = pop), alpha = 0.5)
 ```
-]
 
-.pull-right[
-```{r, echo = FALSE}
-library(viridisLite)
-
-ggplot(data = df, aes(x = xvar, y = yvar)) +
-  geom_point(aes(color = xvar)) +
-  scale_color_viridis_c()
+```{r, fig.asp = 0.7}
+p + scale_color_hue(guide = FALSE)
 ```
-]
+
+---
+
+# Color Scale Examples: Manual Values
+
+```{r, fig.asp = 0.7}
+p + scale_color_manual(values = country_colors, guide = FALSE)
+```
+
+---
+
+# Color Scale Examples: `viridis`
+
+```{r, fig.asp = 0.7}
+library(viridisLite)
+  ## or install development version of
+  ## ggplot2 from Github
+
+p + scale_color_viridis_d(guide = FALSE)
+```
 
 ---
 
@@ -1571,7 +1577,7 @@ gdp_exp
 
 ## 😱 Fix it! With `scales`
 
-As we saw, a legend will not be helpful here - there are too many countries.
+As we saw, a legend for color will not be helpful; there are too many countries.
 
 However, a legend *would* be helpful for the population sizes.
 

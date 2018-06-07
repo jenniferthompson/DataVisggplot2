@@ -180,10 +180,10 @@ print(head(df, n = 3), digits = 2)
 ```
 
 ```
-##   xvar yvar
-## 1  0.2 0.16
-## 2  1.1 0.55
-## 3  0.7 0.47
+##    xvar yvar
+## 1 0.838 0.14
+## 2 0.069 0.06
+## 3 0.466 0.46
 ```
 
 
@@ -202,10 +202,10 @@ print(head(df, n = 3), digits = 2)
 ```
 
 ```
-##   xvar yvar
-## 1  0.2 0.16
-## 2  1.1 0.55
-## 3  0.7 0.47
+##    xvar yvar
+## 1 0.838 0.14
+## 2 0.069 0.06
+## 3 0.466 0.46
 ```
 
 
@@ -983,25 +983,46 @@ You can change these defaults in several ways, including:
 
 ---
 
-# `viridis` example
+# Color Scale Examples: Default Hues
 
-.pull-left[
+
+```r
+p &lt;- ggplot(data = gap2007, aes(x = gdpPercap, y = lifeExp)) +
+  geom_point(aes(color = country, size = pop), alpha = 0.5)
+```
+
+
+```r
+p + scale_color_hue(guide = FALSE)
+```
+
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-45-1.png)&lt;!-- --&gt;
+
+---
+
+# Color Scale Examples: Manual Values
+
+
+```r
+p + scale_color_manual(values = country_colors, guide = FALSE)
+```
+
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-46-1.png)&lt;!-- --&gt;
+
+---
+
+# Color Scale Examples: `viridis`
+
 
 ```r
 library(viridisLite)
+  ## or install development version of
+  ## ggplot2 from Github
 
-ggplot(
-  data = df,
-  aes(x = xvar, y = yvar)
-) +
-  geom_point(aes(color = xvar)) +
-  scale_color_viridis_c()
+p + scale_color_viridis_d(guide = FALSE)
 ```
-]
 
-.pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-45-1.png)&lt;!-- --&gt;
-]
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-47-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -1023,7 +1044,7 @@ ggplot(data = gap2007, aes(x = gdpPercap, y = lifeExp)) +
   geom_smooth()
 ```
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-46-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-48-1.png)&lt;!-- --&gt;
 ---
 
 .pull-left[
@@ -1071,7 +1092,7 @@ ggplot(
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-48-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-50-1.png)&lt;!-- --&gt;
 ]
 
 --
@@ -1103,7 +1124,7 @@ ggplot(
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-50-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-52-1.png)&lt;!-- --&gt;
 ]
 
 --
@@ -1144,7 +1165,7 @@ ggplot(
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-52-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-54-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1175,7 +1196,7 @@ p &lt;- ggplot(data = gap2007, aes(x = gdpPercap, y = lifeExp)) +
 p + theme_bw()
 ```
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-54-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-56-1.png)&lt;!-- --&gt;
 ]
 
 .pull-right[
@@ -1184,7 +1205,7 @@ p + theme_bw()
 p + theme_minimal()
 ```
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-55-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-57-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1203,7 +1224,7 @@ We also use `themes` to change elements of the plot that are not related to `dat
 p + theme_minimal()
 ```
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-56-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-58-1.png)&lt;!-- --&gt;
 ]
 
 .pull-right[
@@ -1219,7 +1240,7 @@ p + theme_minimal() +
   )
 ```
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-57-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-59-1.png)&lt;!-- --&gt;
 
 ]
 
@@ -1268,7 +1289,7 @@ p +
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-60-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-62-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1329,7 +1350,7 @@ ggplot(
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-63-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-65-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1375,7 +1396,7 @@ gdp_exp &lt;- ggplot(
 gdp_exp
 ```
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-66-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-68-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1388,7 +1409,7 @@ gdp_exp &lt;- gdp_exp +
   facet_grid(year ~ continent)
 ```
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-68-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-70-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -1407,13 +1428,13 @@ gdp_exp &lt;- gdp_exp +
 
 --
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-70-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-72-1.png)&lt;!-- --&gt;
 
 ---
 
 ## 😱 Fix it! With `scales`
 
-As we saw, a legend will not be helpful here - there are too many countries.
+As we saw, a legend for color will not be helpful; there are too many countries.
 
 However, a legend *would* be helpful for the population sizes.
 
@@ -1461,7 +1482,7 @@ gdp_exp &lt;- gdp_exp +
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-73-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-75-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1482,7 +1503,7 @@ ggplot(
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-75-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-77-1.png)&lt;!-- --&gt;
 ]
 
 --
@@ -1516,7 +1537,7 @@ gdp_exp &lt;- gdp_exp +
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-78-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-80-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1551,7 +1572,7 @@ gdp_exp &lt;- gdp_exp +
 ]
 
 .pull-right[
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-81-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-83-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -1596,7 +1617,7 @@ gdp_exp &lt;- gdp_exp +
 
 # Final Result
 
-![](datavis_ggplot2_files/figure-html/unnamed-chunk-83-1.png)&lt;!-- --&gt;
+![](datavis_ggplot2_files/figure-html/unnamed-chunk-85-1.png)&lt;!-- --&gt;
 
 ---
 
