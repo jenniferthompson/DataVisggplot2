@@ -180,10 +180,10 @@ print(head(df, n = 3), digits = 2)
 ```
 
 ```
-##    xvar   yvar
-## 1  0.23  0.082
-## 2 -0.68 -0.362
-## 3 -0.42 -0.412
+##    xvar  yvar
+## 1 -0.34 -0.08
+## 2 -1.64 -1.03
+## 3 -1.06 -0.78
 ```
 
 
@@ -202,10 +202,10 @@ print(head(df, n = 3), digits = 2)
 ```
 
 ```
-##    xvar   yvar
-## 1  0.23  0.082
-## 2 -0.68 -0.362
-## 3 -0.42 -0.412
+##    xvar  yvar
+## 1 -0.34 -0.08
+## 2 -1.64 -1.03
+## 3 -1.06 -0.78
 ```
 
 
@@ -977,7 +977,7 @@ You can change these defaults in several ways, including:
 - Tweak the defaults with `scale_color_hue()` or `scale_color_gradient()` - for example, change the gradient color from the default blue to green, or change the range of hues for a categorical variable
 - Use one of the built-in ColorBrewer schemes, which are built to handle sequential, diverging, and qualitative color schemes (`scale_color_brewer()` for categorical, `scale_color_distiller()` for continuous)
 - Supply a manual color scheme, using words like `"blue"` or hex colors (eg, `#FAFAFA`): `scale_color_manual()`
-- I personally like the `viridis` color schemes. *(These are not currently included in `ggplot2` itself, but will be in the next version released to CRAN this summer. You can install the `viridisLite` package to use them now. **ADD LINK**)* These scales print well, even in black &amp; white, and are built to be perceived by people with color blindness.
+- I personally like the `viridis` color schemes. *(These are not currently included in `ggplot2` itself, but will be in the next version released to CRAN this summer. You can install the [`viridisLite`](https://cran.r-project.org/package=viridisLite) package to use them now.)* These scales print well, even in black &amp; white, and are built to be perceived by people with color blindness.
 
 (All scale options above also apply to `scale_fill_xxxx`)
 
